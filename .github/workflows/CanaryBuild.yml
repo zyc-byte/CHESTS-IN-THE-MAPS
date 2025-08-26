@@ -1,0 +1,61 @@
+name: Build Canary
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'Canary.cpp'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main, master ]
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build-matrix:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            compiler: msvc
+            executable: Canary.exe
+          - os: ubuntu-latest
+            compiler: clang++
+            executable: Canary
+            
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup MSVC (Windows)
+      if: matrix.compiler == 'msvc'
+      uses: ilammy/msvc-dev-cmd@v1
+      
+    - name: Install clang++ (Linux)
+      if: matrix.compiler == 'clang++'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang
+        
+    - name: Build with MSVC
+      if: matrix.compiler == 'msvc'
+      run: |
+        cl.exe /EHsc /O2 /std:c++17 /W4 /Fe:${{ matrix.executable }} Canary.cpp
+        
+    - name: Build with clang++
+      if: matrix.compiler == 'clang++'
+      run: |
+        clang++ -std=c++17 -O2 -Wall -Wextra -o ${{ matrix.executable }} Canary.cpp
+        
+    - name: Test executable
+      run: |
+        ./${{ matrix.executable }}
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: canary-${{ matrix.os }}
+        path: ${{ matrix.executable }}
