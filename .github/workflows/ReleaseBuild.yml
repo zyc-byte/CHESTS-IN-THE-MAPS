@@ -1,0 +1,36 @@
+name: Build Release with GCC
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-gcc-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: >-
+          mingw-w64-x86_64-gcc
+          mingw-w64-x86_64-toolchain
+          
+    - name: Build with GCC Maximum Optimization
+      shell: msys2 {0}
+      run: |
+        g++ -std=c++23 -O3 -march=native -mtune=native -flto -fomit-frame-pointer \
+            -funroll-loops -ffast-math -finline-functions -fprefetch-loop-arrays \
+            -DNDEBUG -Wall -Wextra -static -s -o Release.exe Release.cpp
+        
+    - uses: actions/upload-artifact@v4
+      with:
+        name: release-gcc
+        path: Release.exe

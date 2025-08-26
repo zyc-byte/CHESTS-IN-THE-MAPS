@@ -5,14 +5,16 @@ using namespace std;
 const int N=55;
 int n,a[N][N],sum[15],x,y,fx,money=0,hp=20,full=20,step=0;
 int zombieX[5],zombieY[5],zombieS;
+int skeletonX[5],skeletonY[5],skeletonS; 
+int arrowX[25],arrowY[25],arrowFx[25],arrowS;
 int cx[4]= {0,1,0,-1};
 int cy[4]= {1,0,-1,0};
 bool vis[N][N],flag=0;
-int thingMoney[15]= {1,5,100,100,200,300,1000,5000,10000000,50000000,30000000};
+int thingMoney[15]= {1,5,100,100,200,300,1000,5000,100000,500000,300000};
 bool in(int x,int y) {
 	return (x>=1&&x<=n&&y>=1&&y<=n);
 }
-void checkRoad(int x,int y) { //¼ì²âÊÇ·ñÓĞÂ·
+void checkRoad(int x,int y) { //æ£€æµ‹æ˜¯å¦æœ‰è·¯
 	if(x==n-1&&y==n-1) {
 		flag=1;
 		return ;
@@ -29,38 +31,62 @@ void checkRoad(int x,int y) { //¼ì²âÊÇ·ñÓĞÂ·
 	}
 	return ;
 }
-char printChar(int x) { //Êı×ª×Ö·û
-	if(x<5) {
+char printChar(int x) { //æ•°è½¬å­—ç¬¦
+	if(x<5){
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),0xF0);
 		return ' ';
 	}
-	if(x>=5&&x<=7) {
+	if(x>=5&&x<=7){
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),0xCF);
 		return 'W';
 	}
-	if(x==8) {
+	if(x==8){
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),0xE0);
 		return 'C';
 	}
-	if(x==9) {
+	if(x==9){
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),0xAF);
 		return 'Z';
 	}
-	if(x==10) {
+	if(x==10){
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),0x9F);
 		return 'Y';
 	}
-	if(x==11) {
+	if(x==11){
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),0x80);
 		return 'D';
 	}
 	if(x==12){
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),0xAF);
 		return '2';
 	}
 	if(x==13){
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),0xAF);
 		return '1';
 	}
+	if(x==14){
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),0xF0);
+		return 'S';
+	}
+	if(x==15){
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),0xF0);
+		return '2'; 
+	}
+	if(x==16){
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),0xF0);
+		return '1';
+	}
+	if(x==17){
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),0xF0);
+		return 'A';
+	}
 }
-void mp() { //Êä³öµØÍ¼
-	printf(" ¨X¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨j¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨j¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨[ \n"); 
-	printf(" ¨U ½ğÇ®:%9d",money);
-	printf(" ¨U ÉúÃü:%9d",hp);
-	printf("¨U ±¥Ê³¶È:%7d¨U \n",full);
-	printf(" ¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨m¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨m¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a \n"); 
+void mp() { //è¾“å‡ºåœ°å›¾
+	printf(" â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¦â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•¦â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•— \n"); 
+	printf(" â•‘ é‡‘é’±:%9d",money);
+	printf(" â•‘ ç”Ÿå‘½:%9d",hp);
+	printf("â•‘ é¥±é£Ÿåº¦:%7dâ•‘ \n",full);
+	printf(" â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•©â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•©â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• \n"); 
 	printf("\n");
 	printf("  ");
 	for(int i=1; i<=n; i++) {
@@ -71,11 +97,12 @@ void mp() { //Êä³öµØÍ¼
 		printf("%2d ",i);
 		for(int j=1; j<=n; j++) {
 			printf("[%c]",printChar(a[i][j]));
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),0x03);
 		}
 		printf("\n");
 	}
 }
-void makeMp(int x,int y) { //¹¹½¨µØÍ¼
+void makeMp(int x,int y) { //æ„å»ºåœ°å›¾
 	vis[x][y]=1;
 	a[x][y]=rand()%8;
 	for(int i=0; i<4; i++) {
@@ -85,10 +112,10 @@ void makeMp(int x,int y) { //¹¹½¨µØÍ¼
 		}
 	}
 }
-void chest() { //¿ªÏä×Ó
+void chest() { //å¼€ç®±å­
 	system("cls");
-	printf("Ïä×Ó\n");
-	printf("¨X¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨[ \n");
+	printf("ç®±å­\n");
+	printf("â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•— \n");
 	for(int i=0; i<8; i++) {
 		int ChestMoney;
 		if(i==1){
@@ -103,68 +130,68 @@ void chest() { //¿ªÏä×Ó
 		if(i>5){
 			ChestMoney=rand()%3;
 		}
-		if(i==0) printf("¨U Ô­Ê¯:%2d               ¨U ",ChestMoney),sum[0]+=ChestMoney;
-		if(i==1) printf("¨U ÃºÌ¿:%2d               ¨U ",ChestMoney),sum[1]+=ChestMoney;
-		if(i==2) printf("¨U Ìú¶§:%2d               ¨U ",ChestMoney),sum[2]+=ChestMoney;
-		if(i==3) printf("¨U ½ğ¶§:%2d               ¨U ",ChestMoney),sum[3]+=ChestMoney;
-		if(i==4) printf("¨U ºìÊ¯:%2d               ¨U ",ChestMoney),sum[4]+=ChestMoney;
-		if(i==5) printf("¨U Çà½ğÊ¯:%2d             ¨U ",ChestMoney),sum[5]+=ChestMoney;
-		if(i==6) printf("¨U ÂÌ±¦Ê¯:%2d             ¨U ",ChestMoney),sum[6]+=ChestMoney;
-		if(i==7) printf("¨U ×êÊ¯:%2d               ¨U ",ChestMoney),sum[7]+=ChestMoney;
+		if(i==0) printf("â•‘ åŸçŸ³:%2d               â•‘ ",ChestMoney),sum[0]+=ChestMoney;
+		if(i==1) printf("â•‘ ç…¤ç‚­:%2d               â•‘ ",ChestMoney),sum[1]+=ChestMoney;
+		if(i==2) printf("â•‘ é“é”­:%2d               â•‘ ",ChestMoney),sum[2]+=ChestMoney;
+		if(i==3) printf("â•‘ é‡‘é”­:%2d               â•‘ ",ChestMoney),sum[3]+=ChestMoney;
+		if(i==4) printf("â•‘ çº¢çŸ³:%2d               â•‘ ",ChestMoney),sum[4]+=ChestMoney;
+		if(i==5) printf("â•‘ é’é‡‘çŸ³:%2d             â•‘ ",ChestMoney),sum[5]+=ChestMoney;
+		if(i==6) printf("â•‘ ç»¿å®çŸ³:%2d             â•‘ ",ChestMoney),sum[6]+=ChestMoney;
+		if(i==7) printf("â•‘ é’»çŸ³:%2d               â•‘ ",ChestMoney),sum[7]+=ChestMoney;
 		if(i<7){
-			printf("\n¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g \n");
+			printf("\nâ• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£ \n");
 		}
 	}
-	printf("\n¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a \n");
-	printf("ËÑ¹ÎÍê±Ï£¡\n");
+	printf("\nâ•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• \n");
+	printf("æœåˆ®å®Œæ¯•ï¼\n");
 	system("pause");
 	return ;
 }
-void shop() { //ÉÌµê
+void shop() { //å•†åº— 
 	system("cls");
 	while(1) {
 		int shopSelect;
-		printf("»¶Ó­¹âÁÙÉÌµê!\n");
-		printf("ÇëÊäÈëÄãÒª¸ÉÊ²Ã´:\n");
-		printf("[0]Âò [1]Âô [2]ÍË³ö\n");
+		printf("æ¬¢è¿å…‰ä¸´å•†åº—!\n");
+		printf("è¯·è¾“å…¥ä½ è¦å¹²ä»€ä¹ˆ:\n");
+		printf("[0]ä¹° [1]å– [2]é€€å‡º\n");
 		scanf("%d",&shopSelect);
 		if(shopSelect==0) {
-			printf("½ğÇ®:%d\n",money);
-			printf("1.Ä©Ó°ÕäÖé:$1000,0000 ´«ËÍÖÁ¸½½ü8*8µÄ·¶Î§ÄÚ\n");
-			printf("2.ÖÎÁÆÒ©Ë®:$5000,0000 »Ö¸´ÖÁÂúÑª\n");
-			printf("3.Åç½¦ĞÍÉËº¦Ò©Ë®:$3000,0000 ¶Ô5*5·¶Î§ÄÚµÄ¹íÔì³É10µãÉËº¦\n");
-			printf("ÄãÒªÂòÄÇ¸ö(±àºÅ)?");
+			printf("é‡‘é’±:%d\n",money);
+			printf("1.æœ«å½±çç :$10,0000 ä¼ é€è‡³é™„è¿‘9*9çš„èŒƒå›´å†…\n");
+			printf("2.æ²»ç–—è¯æ°´:$50,0000 æ¢å¤è‡³æ»¡è¡€\n");
+			printf("3.å–·æº…å‹ä¼¤å®³è¯æ°´:$30,0000 å¯¹5*5èŒƒå›´å†…çš„é¬¼é€ æˆ10ç‚¹ä¼¤å®³\n");
+			printf("ä½ è¦ä¹°é‚£ä¸ª(ç¼–å·)?");
 			int buy;
 			scanf("%d",&buy);
 			if(buy==1) {
 				if(money>=thingMoney[8]){
 					sum[8]++,money-=thingMoney[8];
 				} else{
-					printf("ÀÏ°å:Âò²»Æğ¾Í¹ö°É!¿ªÄãµÄÏä×ÓÈ¥!\n");
+					printf("è€æ¿:ä¹°ä¸èµ·å°±æ»šå§!å¼€ä½ çš„ç®±å­å»!\n");
 					Sleep(2000);
 				}
 			} else if(buy==2) {
 				if(money>=thingMoney[9]){
 					sum[9]++,money-=thingMoney[9];
 				} else{
-					printf("ÀÏ°å:Âò²»Æğ¾Í¹ö°É!¿ªÄãµÄÏä×ÓÈ¥!\n");
+					printf("è€æ¿:ä¹°ä¸èµ·å°±æ»šå§!å¼€ä½ çš„ç®±å­å»!\n");
 					Sleep(2000);
 				}
 			} else if(buy==3) {
 				if(money>=thingMoney[10]){
 					sum[10]++,money-=thingMoney[10];
 				} else{
-					printf("ÀÏ°å:Âò²»Æğ¾Í¹ö°É!¿ªÄãµÄÏä×ÓÈ¥!\n");
+					printf("è€æ¿:ä¹°ä¸èµ·å°±æ»šå§!å¼€ä½ çš„ç®±å­å»!\n");
 					Sleep(2000);
 				}
 			}
 		}
 		if(shopSelect==1) {
-			printf("½ğÇ®:%d\n",money);
+			printf("é‡‘é’±:%d\n",money);
 			for(int i=0; i<11; i++) {
 				money+=sum[i]*thingMoney[i],sum[i]=0;
 			}
-			printf("³É½»! ½ğÇ®:%d\n",money);
+			printf("æˆäº¤! é‡‘é’±:%d\n",money);
 			Sleep(1000);
 		}
 		if(shopSelect==2){
@@ -173,48 +200,50 @@ void shop() { //ÉÌµê
 		system("cls");
 	}
 }
-void quickTeach(){//¿ìËÙ½ÌÑ§ 
+void quickTeach(){//å¿«é€Ÿæ•™å­¦ 
 	system("cls");
-	printf(" ¨X¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨[ \n");
-	printf(" ¨U ½Ì³Ì:                                                    ¨U \n");
-	printf(" ¨U 1.' '=¿Õ,'W'=Ç½,'C'=Ïä×Ó,'Y'=Íæ¼Ò,'Z'=½©Ê¬,'D'=ÃÅ(³ö¿Ú)  ¨U \n");
-	printf(" ¨U 2.²Ù×÷:                                                  ¨U \n");
-	printf(" ¨U   (1)w,a,s,d:ÉÏÏÂ×óÓÒ                                    ¨U \n");
-	printf(" ¨U   (2)o:¿ªÉÏÒ»´Î·½ÏòµÄÏä×Ó                                ¨U \n");
-	printf(" ¨U   (3)k:¹¥»÷ËÄÖÜµÄ¹ÖÎï                                    ¨U \n");
-	printf(" ¨U   (4)r:ÍË³ö                                              ¨U \n");
-	printf(" ¨U   (5)e:´ò¿ª±³°ü                                          ¨U \n");
-	printf(" ¨U   (6)t:²é¿´½Ì³Ì                                          ¨U \n");
-	printf(" ¨U   (7)u:Ê¹ÓÃµÀ¾ß                                          ¨U \n");
-	printf(" ¨U   (8)q:³Ô¶«Î÷                                            ¨U \n");
-	printf(" ¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a \n"); 
+	printf(" â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•— \n");
+	printf(" â•‘ æ•™ç¨‹:                                                             â•‘ \n");
+	printf(" â•‘ 1.' '=ç©º,'W'=å¢™,'C'=ç®±å­,'Y'=ç©å®¶,'Z'=åƒµå°¸,'S'=éª·é«…,'D'=é—¨(å‡ºå£)  â•‘ \n");
+	printf(" â•‘ 2.æ“ä½œ:                                                           â•‘ \n");
+	printf(" â•‘   (1)w,a,s,d:ä¸Šä¸‹å·¦å³                                             â•‘ \n");
+	printf(" â•‘   (2)o:å¼€ä¸Šä¸€æ¬¡æ–¹å‘çš„ç®±å­                                         â•‘ \n");
+	printf(" â•‘   (3)k:æ”»å‡»å››å‘¨çš„æ€ªç‰©                                             â•‘ \n");
+	printf(" â•‘   (4)r:é€€å‡º                                                       â•‘ \n");
+	printf(" â•‘   (5)e:æ‰“å¼€èƒŒåŒ…                                                   â•‘ \n");
+	printf(" â•‘   (6)t:æŸ¥çœ‹æ•™ç¨‹                                                   â•‘ \n");
+	printf(" â•‘   (7)u:ä½¿ç”¨é“å…·                                                   â•‘ \n");
+	printf(" â•‘   (8)q:åƒä¸œè¥¿                                                     â•‘ \n");
+	printf(" â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• \n"); 
 }
 void useThing(){
-	printf("±³°üµÀ¾ß:\n");
-	printf(" ¨X¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨[ \n");
-	printf(" ¨U 1.Ä©Ó°ÕäÖé:%2d         ¨U \n",sum[8]);
-	printf(" ¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g \n");
-	printf(" ¨U 2.ÖÎÁÆÒ©Ë®:%2d         ¨U \n",sum[9]);
-	printf(" ¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g \n");
-	printf(" ¨U 3.Åç½¦ĞÍÉËº¦Ò©Ë®:%2d   ¨U \n",sum[10]);
-	printf(" ¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a \n");
-	printf("ÄãÒªÊ¹ÓÃµÚ¼¸¸öµÀ¾ß?\n");
+	printf("èƒŒåŒ…é“å…·:\n");
+	printf(" â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•— \n");
+	printf(" â•‘ 1.æœ«å½±çç :%2d         â•‘ \n",sum[8]);
+	printf(" â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£ \n");
+	printf(" â•‘ 2.æ²»ç–—è¯æ°´:%2d         â•‘ \n",sum[9]);
+	printf(" â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£ \n");
+	printf(" â•‘ 3.å–·æº…å‹ä¼¤å®³è¯æ°´:%2d   â•‘ \n",sum[10]);
+	printf(" â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• \n");
+	printf("ä½ è¦ä½¿ç”¨ç¬¬å‡ ä¸ªé“å…·?\n");
 	int useSelect;
 	scanf("%d",&useSelect);
 	if(useSelect==1&&sum[8]>0){
 		sum[8]--;
-		printf("ÄãÒª´«ËÍµ½?:");
+		printf("ä½ è¦ä¼ é€åˆ°?:");
 		int Ender_Pearl_X,Ender_Pearl_Y;
 		scanf("%d%d",&Ender_Pearl_X,&Ender_Pearl_Y);
+		Ender_Pearl_X=min(Ender_Pearl_X,x+4),Ender_Pearl_Y=min(Ender_Pearl_Y,y+4);
+		Ender_Pearl_X=max(Ender_Pearl_X,x-4),Ender_Pearl_Y=max(Ender_Pearl_Y,y-4);
 		a[x][y]=0;
 		x=Ender_Pearl_X,y=Ender_Pearl_Y;
-		printf("Íæ¼Ò Ê¹ÓÃ Ä©Ó°ÕäÖé,ÒÑ½« Íæ¼Ò ´«ËÍµ½ %d %d\n",x,y);
+		printf("ç©å®¶ ä½¿ç”¨ æœ«å½±çç ,å·²å°† ç©å®¶ ä¼ é€åˆ° %d %d\n",x,y);
 		Sleep(1000);
 	}
 	if(useSelect==2&&sum[9]>0){
 		sum[9]--;
 		hp=20;
-		printf("Íæ¼Ò Ê¹ÓÃ ÖÎÁÆÒ©Ë®,ÉúÃüÖµ »Ö¸´ÖÁ 20/20\n");
+		printf("ç©å®¶ ä½¿ç”¨ æ²»ç–—è¯æ°´,ç”Ÿå‘½å€¼ æ¢å¤è‡³ 20/20\n");
 	}
 	if(useSelect==3&&sum[10]>0){
 		sum[10]--;
@@ -222,44 +251,48 @@ void useThing(){
 			for(int j=max(1,y-2);j<=min(n,y+2);j++){
 				for(int k=1;k<=zombieS;k++){
 					if(zombieX[k]==i&&zombieY[k]==j){
-						printf("Íæ¼Ò Ê¹ÓÃ Åç½¦ĞÍÉËº¦Ò©Ë®,chest:zombie %d\n",i);
+						a[zombieX[k]][zombieY[k]]=0;
+						zombieX[k]=-100,zombieY[k]=-100;
+						printf("ç©å®¶ ä½¿ç”¨ å–·æº…å‹ä¼¤å®³è¯æ°´,chest:zombie %dè¢«æ€æ­»äº†\n",i);
 					}
 				}
 			}
 		}
+		Sleep(1000);
 	}
 }
 void seeBag(){
 	system("cls");
-	printf("±³°ü\n");
-	printf("¨X¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨[ \n");
-	for(int i=0; i<12; i++) {
-		if(i==0) printf("¨U Ô­Ê¯:%2d               ¨U ",sum[i]);
-		if(i==1) printf("¨U ÃºÌ¿:%2d               ¨U ",sum[i]);
-		if(i==2) printf("¨U Ìú¶§:%2d               ¨U ",sum[i]);
-		if(i==3) printf("¨U ½ğ¶§:%2d               ¨U ",sum[i]);
-		if(i==4) printf("¨U ºìÊ¯:%2d               ¨U ",sum[i]);
-		if(i==5) printf("¨U Çà½ğÊ¯:%2d             ¨U ",sum[i]);
-		if(i==6) printf("¨U ÂÌ±¦Ê¯:%2d             ¨U ",sum[i]);
-		if(i==7) printf("¨U ×êÊ¯:%2d               ¨U ",sum[i]);
-		if(i==8) printf("¨U Ä©Ó°ÕäÖé:%2d           ¨U ",sum[i]);
-		if(i==9) printf("¨U ÖÎÁÆÒ©Ë®:%2d           ¨U ",sum[i]);
-		if(i==10) printf("¨U Åç½¦ĞÍÉËº¦Ò©Ë®:%2d     ¨U ",sum[i]);
-		if(i==11) printf("¨U ¸¯Èâ:%2d               ¨U ",sum[i]);
-		if(i<11){
-			printf("\n¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g \n");
+	printf("èƒŒåŒ…\n");
+	printf("â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•— \n");
+	for(int i=0; i<13; i++) {
+		if(i==0) printf("â•‘ åŸçŸ³:%2d               â•‘ ",sum[i]);
+		if(i==1) printf("â•‘ ç…¤ç‚­:%2d               â•‘ ",sum[i]);
+		if(i==2) printf("â•‘ é“é”­:%2d               â•‘ ",sum[i]);
+		if(i==3) printf("â•‘ é‡‘é”­:%2d               â•‘ ",sum[i]);
+		if(i==4) printf("â•‘ çº¢çŸ³:%2d               â•‘ ",sum[i]);
+		if(i==5) printf("â•‘ é’é‡‘çŸ³:%2d             â•‘ ",sum[i]);
+		if(i==6) printf("â•‘ ç»¿å®çŸ³:%2d             â•‘ ",sum[i]);
+		if(i==7) printf("â•‘ é’»çŸ³:%2d               â•‘ ",sum[i]);
+		if(i==8) printf("â•‘ æœ«å½±çç :%2d           â•‘ ",sum[i]);
+		if(i==9) printf("â•‘ æ²»ç–—è¯æ°´:%2d           â•‘ ",sum[i]);
+		if(i==10) printf("â•‘ å–·æº…å‹ä¼¤å®³è¯æ°´:%2d     â•‘ ",sum[i]);
+		if(i==11) printf("â•‘ è…è‚‰:%2d               â•‘ ",sum[i]);
+		if(i==12) printf("â•‘ éª¨å¤´:%2d               â•‘ ",sum[i]);
+		if(i<12){
+			printf("\nâ• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£ \n");
 		}
 	}
-	printf("\n¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a \n");
+	printf("\nâ•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• \n");
 	system("pause");
 }
 void eatFood(){
-	printf("Ê³Îï:\n");
-	printf("¨X¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨[ \n");
-	printf("¨U 1.¸¯Èâ:%2d             ¨U \n",sum[11]);
-	printf("¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a \n");
+	printf("é£Ÿç‰©:\n");
+	printf("â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•— \n");
+	printf("â•‘ 1.è…è‚‰:%2d             â•‘ \n",sum[11]);
+	printf("â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• \n");
 	int foodSelect,foodS;
-	printf("³ÔÄÄÒ»¸öÊ³Îï,³Ô¶àÉÙ?");
+	printf("åƒå“ªä¸€ä¸ªé£Ÿç‰©,åƒå¤šå°‘?");
 	scanf("%d%d",&foodSelect,&foodS);
 	if(foodSelect==1){
 		foodS=min(foodS,sum[11]);
@@ -271,23 +304,23 @@ void eatFood(){
 void game() {
 	system("color 03");
 	printf("\n\n\n\n\n");
-	printf("                                          ¨X¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨[ \n");
-	printf("					  ¨U       CHESTS IN         ¨U\n");
-	printf("					  ¨U                         ¨U\n");
-	printf("					  ¨U            THE MAPS     ¨U\n");
-	printf("					  ¨U                         ¨U\n");
-	printf("					  ¨U       C++ EDITON        ¨U\n");
-	printf("                                          ¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a \n");
+	printf("                                          â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•— \n");
+	printf("					  â•‘       CHESTS IN         â•‘\n");
+	printf("					  â•‘                         â•‘\n");
+	printf("					  â•‘            THE MAPS     â•‘\n");
+	printf("					  â•‘                         â•‘\n");
+	printf("					  â•‘       C++ EDITON        â•‘\n");
+	printf("                                          â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• \n");
 	printf("\n\n\n\n\n");
-	printf("						°´ÈÎÒâ¼ü¿ªÊ¼ÓÎÏ·...\n\n\n\n\n\n\n\n\n\n\n\n\n");
-	printf("Alpha 0.5.1(²âÊÔ°æ)\n");
+	printf("						æŒ‰ä»»æ„é”®å¼€å§‹æ¸¸æˆ...\n\n\n\n\n\n\n\n\n\n\n\n\n");
+	printf("Alpha 0.6.4(æµ‹è¯•ç‰ˆ)\n");
 	system("pause");
 	system("cls");
-	printf("ÓÎÏ·Ñ¡Ïî:\n");
-	printf("µØÍ¼´óĞ¡(5-20):[  ]\b\b\b");
+	printf("æ¸¸æˆé€‰é¡¹:\n");
+	printf("åœ°å›¾å¤§å°(5-20):[  ]\b\b\b");
 	scanf("%d",&n);
 	n=max(5,n),n=min(20,n);
-	printf("µØÍ¼ÄÑ¶È(1-5):[  ]\b\b\b");
+	printf("åœ°å›¾éš¾åº¦(1-5):[  ]\b\b\b");
 	quickTeach();
 	system("pause");
 	system("cls");
@@ -298,37 +331,46 @@ void game() {
 		memset(a,0,sizeof(a));
 		memset(vis,false,sizeof(vis));
 		while(1) {
-			int MapX,MapY;//¹¹½¨µØÍ¼µÄÆğµã
+			int MapX,MapY;//æ„å»ºåœ°å›¾çš„èµ·ç‚¹
 			MapX=rand()%(n+1),MapY=rand()%(n+1);
 			if(MapX==0) MapX++;
 			if(MapY==0) MapY++;
 			makeMp(MapX,MapY);
-			checkRoad(2,2);//ÊÇ·ñÓĞÂ·ÄÜµ½ÖÕµã
+			checkRoad(2,2);//æ˜¯å¦æœ‰è·¯èƒ½åˆ°ç»ˆç‚¹
 			if(flag==1) {
 				break;
 			}
-			flag=0;//³õÊ¼»¯
+			flag=0;//åˆå§‹åŒ–
 			memset(vis,false,sizeof(vis));
 		}
 		zombieS=3;
-		x=2,y=2;
-		a[x][y]=10;
+		skeletonS=2;
 		for(int i=1; i<=rand()%n; i++){
 			int gx=rand()%(n+1),gy=rand()%(n+1);
 			if(gx==0) gx++;
 			if(gy==0) gy++;
 			a[gx][gy]=8;
 		}
-		for(int i=1; i<=zombieS; i++) {
+		for(int i=1; i<=zombieS; i++) {//ç”Ÿæˆåƒµå°¸  
 			zombieX[i]=rand()%(n+1),zombieY[i]=rand()%(n+1);
 			if(zombieX[i]==0) zombieX[i]++;
 			if(zombieY[i]==0) zombieY[i]++;
 			a[zombieX[i]][zombieY[i]]=9;
 		}
+		for(int i=1; i<=skeletonS; i++){//ç”Ÿæˆéª·é«… 
+			skeletonX[i]=rand()%(n+1),skeletonY[i]=rand()%(n+1);
+			if(skeletonX[i]==0) skeletonX[i]++;
+			if(skeletonY[i]==0) skeletonY[i]++;
+			a[skeletonX[i]][skeletonY[i]]=14;
+		}
+		memset(arrowX,-100,sizeof(arrowX));
+		memset(arrowY,-100,sizeof(arrowY));
+		x=2,y=2;
+		a[x][y]=10;
 		a[n-1][n-1]=11;
-//¹¹½¨µØÍ¼ 
+//æ„å»ºåœ°å›¾ 
 		while(1) {
-			if(step>0&&step%10==0&&full>0){//¸üĞÂ±¥Ê³¶È
+			if(step>0&&step%10==0&&full>0){//æ›´æ–°é¥±é£Ÿåº¦
 				full--;
 			}
 			if(full==20){
@@ -346,9 +388,9 @@ void game() {
 				system("cls");
 				system("color CF");
 				printf("\n\n\n\n\n\n\n");
-				printf("                                    ÄãËÀÁË£¡\n\n\n\n\n\n");
+				printf("                                    ä½ æ­»äº†ï¼\n\n\n\n\n\n");
 				int YN;
-				printf("                      [0]ÍË³öÓÎÏ· [1]ÖØÉú [2]·µ»Ø±êÌâÆÁÄ»");
+				printf("                      [0]é€€å‡ºæ¸¸æˆ [1]é‡ç”Ÿ [2]è¿”å›æ ‡é¢˜å±å¹•");
 				scanf("%d",&YN);
 				if(YN==0) {
 					return ;
@@ -364,9 +406,9 @@ void game() {
 			}
 			if(x==n-1&&y==n-1) {
 				printf("\n\n\n\n\n\n");
-				printf("                           666,Äãµ½ÁËÖÕµã!\n\n\n");
+				printf("                           666,ä½ åˆ°äº†ç»ˆç‚¹!\n\n\n");
 				int YN;
-				printf("                      [0]ÍË³ö [1]¼ÌĞø [2]½øÈëÉÌµê\n");
+				printf("                      [0]é€€å‡º [1]ç»§ç»­ [2]è¿›å…¥å•†åº—\n");
 				scanf("%d",&YN);
 				if(YN==0) {
 					return ;
@@ -381,11 +423,33 @@ void game() {
 			}
 			system("cls");
 			a[x][y]=10;
+			for(int i=1;i<=zombieS;i++){//åƒµå°¸ç§»åŠ¨ 
+				if(abs(zombieX[i]-x)<3&&abs(zombieY[i]-y)<3&&zombieX[i]!=-100&&zombieY[i]!=-100){
+					int zombieType=a[zombieX[i]][zombieY[i]];
+					a[zombieX[i]][zombieY[i]]=0;
+					if(x<zombieX[i]&&a[zombieX[i]-1][zombieY[i]]<5) zombieX[i]--;
+					else if(x>zombieX[i]&&a[zombieX[i]+1][zombieY[i]]<5) zombieX[i]++;
+					else if(y<zombieY[i]&&a[zombieX[i]][zombieY[i]-1]<5) zombieY[i]--;
+					else if(y>zombieY[i]&&a[zombieX[i]][zombieY[i]+1]<5) zombieY[i]++;
+					a[zombieX[i]][zombieY[i]]=zombieType;
+				}
+			}
+			for(int i=1;i<=skeletonS;i++){//éª·é«…ç§»åŠ¨  
+				if((skeletonX[i]!=x || skeletonY[i]!=y)&&skeletonX[i]!=-100&&skeletonY[i]!=-100){
+					int skeletonType=a[skeletonX[i]][skeletonY[i]];
+					a[skeletonX[i]][skeletonY[i]]=0;
+					if(skeletonX[i]>x && a[skeletonX[i]-1][skeletonY[i]]<5) skeletonX[i]--;
+					else if(skeletonX[i]<x && a[skeletonX[i]+1][skeletonY[i]]<5) skeletonX[i]++;
+					else if(skeletonY[i]>y && a[skeletonX[i]][skeletonY[i]-1]<5) skeletonY[i]--;
+					else if(skeletonY[i]<y && a[skeletonX[i]][skeletonY[i]+1]<5) skeletonY[i]++;
+					a[skeletonX[i]][skeletonY[i]]=skeletonType;
+				}
+			}
 			mp();
-			for(int i=1;i<=zombieS;i++){
+			for(int i=1;i<=zombieS;i++){//æ£€æµ‹åƒµå°¸æ”»å‡» 
 				if(abs(zombieX[i]-x)<2&&abs(zombieY[i]-y)<2){
 					hp-=2;
-					printf("Íæ¼Ò ±» ½©Ê¬%d(chest:zombie %i) ¹¥»÷ÁË\n",i,i);
+					printf("ç©å®¶ è¢« åƒµå°¸%d(chest:zombie %d) æ”»å‡»äº†\n",i,i);
 				}
 			}
 			char todo;
@@ -396,13 +460,13 @@ void game() {
 				if(todo=='s') goX++,fx=1;
 				if(todo=='a') goY--,fx=2;
 				if(todo=='w') goX--,fx=3;
-				if(in(goX,goY)&&(a[goX][goY]<5||a[goX][goY]==11)) {
+				if(in(goX,goY)&&(a[goX][goY]<5||a[goX][goY]==11||a[goX][goY]==17)) {
 					a[goX][goY]=10;
 					a[x][y]=0;
 					x=goX,y=goY;
 					step++;
 				} else {
-					printf("ÎŞĞ§Ö¸Áî!\n");
+					printf("æ— æ•ˆæŒ‡ä»¤!\n");
 					Sleep(500);
 				}
 			} else if(todo=='r') {
@@ -417,7 +481,7 @@ void game() {
 					chest();
 					a[goX][goY]=0;
 				} else {
-					printf("ÎŞĞ§Ö¸Áî!\n");
+					printf("æ— æ•ˆæŒ‡ä»¤!\n");
 					Sleep(500);
 				}
 			} else if(todo=='t'){
@@ -430,12 +494,27 @@ void game() {
 					else if(a[killX][killY]==12) a[killX][killY]=13;
 					else if(a[killX][killY]==13){
 						a[killX][killY]=0;
-						for(int i=1;i<=zombieS;i++){
-							if(killX==zombieX[i] && killY==zombieY[i]){
+						for(int j=1;j<=zombieS;j++){
+							if(killX==zombieX[j] && killY==zombieY[j]){
 								int getZombieMeat=rand()%6;
-								zombieX[i]=-1,zombieY[i]=-1;
-								printf("Íæ¼Ò »÷É±ÁË ½©Ê¬ %d,»ñÈ¡¸¯Èâ * %d\n",i,getZombieMeat);
+								zombieX[j]=-100,zombieY[j]=-100;
+								printf("ç©å®¶ å‡»æ€äº† åƒµå°¸ %d,è·å–è…è‚‰ * %d\n",j,getZombieMeat);
 								sum[11]+=getZombieMeat;
+								Sleep(1000);
+								break;
+							}
+						}
+					}
+					else if(a[killX][killY]==14) a[killX][killY]=15;
+					else if(a[killX][killY]==15) a[killX][killY]=16;
+					else if(a[killX][killY]==16){
+						a[killX][killY]=0;
+						for(int j=1;j<=skeletonS;j++){
+							if(killX==skeletonX[j]&&killY==skeletonY[j]){
+								int getBones=rand()%4;
+								skeletonX[j]=-100,skeletonY[j]=-100;
+								printf("ç©å®¶ å‡»æ€äº† éª·é«… %d,è·å– éª¨å¤´ * %d\n",i,getBones);
+								sum[12]+=getBones;
 								Sleep(1000);
 								break;
 							}
@@ -453,7 +532,7 @@ void game() {
 			Sleep(1);
 			system("cls");
 		}
-//ÓÎÏ·
+//æ¸¸æˆ
 	}
 }
 int main() {

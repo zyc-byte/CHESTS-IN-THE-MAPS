@@ -1,61 +1,26 @@
-name: Build Canary
+name: Build Canary with Maximum Optimization
 
 on:
   push:
     branches: [ main, master ]
-    paths:
-      - 'Canary.cpp'
-      - '.github/workflows/**'
   pull_request:
     branches: [ main, master ]
-
-env:
-  BUILD_TYPE: Release
+  workflow_dispatch:
 
 jobs:
-  build-matrix:
-    strategy:
-      matrix:
-        include:
-          - os: windows-latest
-            compiler: msvc
-            executable: Canary.exe
-          - os: ubuntu-latest
-            compiler: clang++
-            executable: Canary
-            
-    runs-on: ${{ matrix.os }}
+  build-optimized:
+    runs-on: windows-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
     
-    - name: Setup MSVC (Windows)
-      if: matrix.compiler == 'msvc'
-      uses: ilammy/msvc-dev-cmd@v1
-      
-    - name: Install clang++ (Linux)
-      if: matrix.compiler == 'clang++'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y clang
+    - uses: ilammy/msvc-dev-cmd@v1
         
-    - name: Build with MSVC
-      if: matrix.compiler == 'msvc'
+    - name: Build with Maximum Optimization
       run: |
-        cl.exe /EHsc /O2 /std:c++17 /W4 /Fe:${{ matrix.executable }} Canary.cpp
+        clang-cl /EHsc /O2 /Ob2 /Oi /Ot /Oy /fp:fast /GS- /GL /std:c++latest /W4 /MT /DNDEBUG /Fe:Canary.exe Canary.cpp
         
-    - name: Build with clang++
-      if: matrix.compiler == 'clang++'
-      run: |
-        clang++ -std=c++17 -O2 -Wall -Wextra -o ${{ matrix.executable }} Canary.cpp
-        
-    - name: Test executable
-      run: |
-        ./${{ matrix.executable }}
-        
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v4
       with:
-        name: canary-${{ matrix.os }}
-        path: ${{ matrix.executable }}
+        name: canary-optimized
+        path: Canary.exe

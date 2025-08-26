@@ -12,22 +12,17 @@
 #include <string_view>
 #include <thread>
 #include <vector>
+
 #include <conio.h>
 
-// Æ½Ì¨Ïà¹Øº¯Êı
+// Windowså¹³å°å‡½æ•°
 namespace Platform {
 inline void clearScreen() noexcept {
-#ifdef _WIN32
   system("cls");
-#else
-  system("clear");
-#endif
 }
 
 inline void setColor() noexcept {
-#ifdef _WIN32
   system("color 03");
-#endif
 }
 
 inline void pause(std::chrono::milliseconds ms) noexcept {
@@ -39,10 +34,10 @@ inline char getChar() noexcept {
 }
 }  // namespace Platform
 
-// ÓÎÏ·ÃüÃû¿Õ¼ä
+// æ¸¸æˆå‘½åç©ºé—´
 namespace ChestsInMaps {
 
-// ==================== ³£Á¿¶¨Òå ====================
+// ==================== å¸¸é‡å®šä¹‰ ====================
 inline constexpr int MAX_MAP_SIZE    = 55;
 inline constexpr int MOVE_DIRECTIONS = 4;
 inline constexpr int GHOST_MAX_HP    = 3;
@@ -50,7 +45,7 @@ inline constexpr int PLAYER_DAMAGE   = 1;
 inline constexpr int INITIAL_HEALTH  = 20;
 inline constexpr int ITEM_TYPES      = 8;
 
-// Ç¿ÀàĞÍÃ¶¾Ù - µØÍ¼ÔªËØ
+// å¼ºç±»å‹æšä¸¾ - åœ°å›¾å…ƒç´ 
 enum class MapElement : std::uint8_t {
   Empty     = 0,
   WallStart = 5,
@@ -65,35 +60,35 @@ enum class MapElement : std::uint8_t {
   GhostWeak = 13
 };
 
-// ÎïÆ·ÏµÍ³
+// ç‰©å“ç³»ç»Ÿ
 struct Item {
   std::string_view name;
   int value;
 };
 
-// ÎïÆ·¶¨Òå
-inline constexpr std::array<Item, ITEM_TYPES> ITEMS = {{{"Ô­Ê¯", 1},
-                                                        {"ÃºÌ¿", 5},
-                                                        {"Ìú¶§", 100},
-                                                        {"ºìÊ¯", 150},
-                                                        {"Çà½ğÊ¯", 1000},
-                                                        {"ÂÌ±¦Ê¯", 1000},
-                                                        {"½ğ¶§", 100000},
-                                                        {"×êÊ¯", 1000000}}};
+// ç‰©å“å®šä¹‰
+inline constexpr std::array<Item, ITEM_TYPES> ITEMS = {{{"åŸçŸ³", 1},
+                                                        {"ç…¤ç‚­", 5},
+                                                        {"é“é”­", 100},
+                                                        {"çº¢çŸ³", 150},
+                                                        {"é’é‡‘çŸ³", 1000},
+                                                        {"ç»¿å®çŸ³", 1000},
+                                                        {"é‡‘é”­", 100000},
+                                                        {"é’»çŸ³", 1000000}}};
 
-// ·½ÏòÏòÁ¿
+// æ–¹å‘å‘é‡
 struct Direction {
   int dx, dy;
 };
 
 inline constexpr std::array<Direction, MOVE_DIRECTIONS> DIRECTIONS = {{
-    {0, 1},   // ÓÒ
-    {1, 0},   // ÏÂ
-    {0, -1},  // ×ó
-    {-1, 0}   // ÉÏ
+    {0, 1},   // å³
+    {1, 0},   // ä¸‹
+    {0, -1},  // å·¦
+    {-1, 0}   // ä¸Š
 }};
 
-// ×ø±ê½á¹¹
+// åæ ‡ç»“æ„
 struct Position {
   int x, y;
 
@@ -109,7 +104,7 @@ struct Position {
   }
 };
 
-// ==================== Ëæ»úÊıÉú³ÉÆ÷ ====================
+// ==================== éšæœºæ•°ç”Ÿæˆå™¨ ====================
 class RandomGenerator {
  private:
   std::random_device rd;
@@ -128,7 +123,7 @@ class RandomGenerator {
   }
 };
 
-// ==================== ÓÎÏ·×´Ì¬ ====================
+// ==================== æ¸¸æˆçŠ¶æ€ ====================
 class GameState {
  public:
   int money          = 0;
@@ -158,7 +153,7 @@ class GameState {
   }
 };
 
-// ==================== µØÍ¼Àà ====================
+// ==================== åœ°å›¾ç±» ====================
 class GameMap {
  private:
   int size_;
@@ -183,13 +178,13 @@ class GameMap {
     while (!pathExists) {
       resetMap();
 
-      // Ëæ»úÑ¡ÔñÆğÊ¼µãÉú³ÉµØÍ¼
+      // éšæœºé€‰æ‹©èµ·å§‹ç‚¹ç”Ÿæˆåœ°å›¾
       auto startX = rng_.getInt(1, size_ + 1);
       auto startY = rng_.getInt(1, size_ + 1);
 
       generateRecursive(startX, startY);
 
-      // ¼ì²éÊÇ·ñÓĞÍ¨Â·
+      // æ£€æŸ¥æ˜¯å¦æœ‰é€šè·¯
       resetVisited();
       pathExists = checkPath(2, 2);
 
@@ -198,15 +193,15 @@ class GameMap {
       }
     }
 
-    // ÉèÖÃÍæ¼ÒºÍ³ö¿Ú
+    // è®¾ç½®ç©å®¶å’Œå‡ºå£
     setElement(2, 2, MapElement::Player);
     setElement(size_ - 1, size_ - 1, MapElement::Door);
     playerPos_ = Position(2, 2);
 
-    // ·ÅÖÃ¹í¹Ö
+    // æ”¾ç½®é¬¼æ€ª
     placeGhosts();
 
-    // ·ÅÖÃ±¦Ïä
+    // æ”¾ç½®å®ç®±
     placeChests();
   }
 
@@ -282,11 +277,11 @@ class GameMap {
   void generateRecursive(int x, int y) {
     visited_[x][y] = true;
 
-    // Ëæ»úÉú³ÉµØĞÎ
+    // éšæœºç”Ÿæˆåœ°å½¢
     auto value = rng_.getInt(0, 9);
     map_[x][y] = static_cast<MapElement>(value);
 
-    // ÏòËÄ¸ö·½ÏòÀ©Õ¹
+    // å‘å››ä¸ªæ–¹å‘æ‰©å±•
     for (auto const& dir : DIRECTIONS) {
       int nextX = x + dir.dx;
       int nextY = y + dir.dy;
@@ -310,9 +305,10 @@ class GameMap {
 
     visited_[x][y] = true;
 
-    return std::any_of(DIRECTIONS.begin(), DIRECTIONS.end(), [this, x, y](Direction const& dir) {
+    return std::any_of(DIRECTIONS.begin(), DIRECTIONS.end(), [&](Direction const& dir) {
       int nextX = x + dir.dx;
       int nextY = y + dir.dy;
+
       return isInBounds(Position(nextX, nextY)) && !visited_[nextX][nextY]
              && (static_cast<int>(map_[nextX][nextY]) < static_cast<int>(MapElement::WallStart)
                  || map_[nextX][nextY] == MapElement::Door || map_[nextX][nextY] == MapElement::Ghost
@@ -384,7 +380,7 @@ class GameMap {
   }
 };
 
-// ==================== UI¹ÜÀíÆ÷ ====================
+// ==================== UIç®¡ç†å™¨ ====================
 class UIManager {
  private:
   std::string lastMessage_;
@@ -401,67 +397,68 @@ class UIManager {
   }
 
   static void displayGameStatus(GameState const& state) {
-    std::cout << "==================== ÓÎÏ·×´Ì¬ ====================\n";
-    std::cout << "½ğ±Ò: " << state.money << "  |  ÉúÃüÖµ: " << state.healthPoints
-              << "  |  ÒÑ¿ª±¦Ïä: " << state.chestsOpened << "  |  »÷°Ü¹í¹Ö: " << state.ghostsDefeated << '\n';
+    std::cout << "==================== æ¸¸æˆçŠ¶æ€ ====================\n";
+    std::cout << "é‡‘å¸: " << state.money << "  |  ç”Ÿå‘½å€¼: " << state.healthPoints
+              << "  |  å·²å¼€å®ç®±: " << state.chestsOpened << "  |  å‡»è´¥é¬¼æ€ª: " << state.ghostsDefeated << '\n';
     std::cout << "==================================================\n";
   }
 
   static void displayBackpack(GameState const& state) {
     Platform::clearScreen();
 
-    std::cout << "¨X¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨[\n";
-    std::cout << "¨U                    ÎÒµÄ±³°ü                    ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U  ½ğ±Ò: " << std::setw(10) << state.money << " Ã¶                            ¨U\n";
-    std::cout << "¨U  ÉúÃüÖµ: " << state.healthPoints << " / 20                               ¨U\n";
-    std::cout << "¨U  ÒÑ¿ªÆô±¦Ïä: " << std::setw(3) << state.chestsOpened << " ¸ö                          ¨U\n";
-    std::cout << "¨U  »÷°Ü¹í¹Ö: " << std::setw(3) << state.ghostsDefeated << " ¸ö                            ¨U\n";
+    std::cout << "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—\n";
+    std::cout << "â•‘                    æˆ‘çš„èƒŒåŒ…                    â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘  é‡‘å¸: " << std::setw(10) << state.money << " æš                            â•‘\n";
+    std::cout << "â•‘  ç”Ÿå‘½å€¼: " << state.healthPoints << " / 20                               â•‘\n";
+    std::cout << "â•‘  å·²å¼€å¯å®ç®±: " << std::setw(3) << state.chestsOpened << " ä¸ª                          â•‘\n";
+    std::cout << "â•‘  å‡»è´¥é¬¼æ€ª: " << std::setw(3) << state.ghostsDefeated << " ä¸ª                            â•‘\n";
 
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U                  ÎïÆ·Çåµ¥                      ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘                  ç‰©å“æ¸…å•                      â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
 
-    bool hasItems = false;
+    // ä½¿ç”¨ std::any_of æ£€æŸ¥æ˜¯å¦æœ‰ç‰©å“
+    bool hasItems = std::any_of(state.backpack.begin(), state.backpack.end(), [](int count) { return count > 0; });
+
     for (size_t i = 0; i < ITEM_TYPES; ++i) {
       if (state.backpack[i] > 0) {
-        hasItems      = true;
         int itemValue = state.backpack[i] * ITEMS[i].value;
 
-        std::cout << "¨U  " << ITEMS[i].name << ": ";
+        std::cout << "â•‘  " << ITEMS[i].name << ": ";
 
         int nameLen = std::string(ITEMS[i].name).length();
         for (int j = 0; j < 12 - nameLen / 3 * 2; ++j) {
           std::cout << " ";
         }
 
-        std::cout << std::setw(3) << state.backpack[i] << "¸ö  ";
-        std::cout << "µ¥¼Û:" << std::setw(7) << ITEMS[i].value;
-        std::cout << "  ×ÜÖµ:" << std::setw(8) << itemValue;
-        std::cout << "   ¨U\n";
+        std::cout << std::setw(3) << state.backpack[i] << "ä¸ª  ";
+        std::cout << "å•ä»·:" << std::setw(7) << ITEMS[i].value;
+        std::cout << "  æ€»å€¼:" << std::setw(8) << itemValue;
+        std::cout << "   â•‘\n";
       }
     }
 
     if (!hasItems) {
-      std::cout << "¨U        ±³°üÊÇ¿ÕµÄ£¬È¥Ñ°ÕÒ±¦Ïä°É£¡             ¨U\n";
+      std::cout << "â•‘        èƒŒåŒ…æ˜¯ç©ºçš„ï¼Œå»å¯»æ‰¾å®ç®±å§ï¼             â•‘\n";
     }
 
     int totalItems = state.calculateTotalItems();
     int totalValue = state.calculateBackpackValue();
 
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U  ÎïÆ·×ÜÊı: " << std::setw(5) << totalItems << " ¼ş                           ¨U\n";
-    std::cout << "¨U  ÎïÆ·×Ü¼ÛÖµ: " << std::setw(10) << totalValue << " ½ğ±Ò                ¨U\n";
-    std::cout << "¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a\n";
-    std::cout << "\n°´ÈÎÒâ¼ü·µ»ØÓÎÏ·...\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘  ç‰©å“æ€»æ•°: " << std::setw(5) << totalItems << " ä»¶                           â•‘\n";
+    std::cout << "â•‘  ç‰©å“æ€»ä»·å€¼: " << std::setw(10) << totalValue << " é‡‘å¸                â•‘\n";
+    std::cout << "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n";
+    std::cout << "\næŒ‰ä»»æ„é”®è¿”å›æ¸¸æˆ...\n";
     Platform::getChar();
   }
 
   static void displayChestOpening(int totalValue, std::array<int, ITEM_TYPES> const& items) {
     Platform::clearScreen();
 
-    // ¿ªÏä¶¯»­
-    std::cout << "\n\n                    ÕıÔÚ´ò¿ª±¦Ïä...\n";
+    // å¼€ç®±åŠ¨ç”»
+    std::cout << "\n\n                    æ­£åœ¨æ‰“å¼€å®ç®±...\n";
     std::cout << "                         ___\n";
     std::cout << "                        /   \\\n";
     std::cout << "                       /_____\\\n";
@@ -470,19 +467,20 @@ class UIManager {
     Platform::pause(std::chrono::milliseconds(500));
 
     Platform::clearScreen();
-    std::cout << "\n¨X¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨[\n";
-    std::cout << "¨U                   ¿ªÆô±¦Ïä                     ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U                   »ñµÃÎïÆ·                     ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
+    std::cout << "\nâ•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—\n";
+    std::cout << "â•‘                   å¼€å¯å®ç®±                     â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘                   è·å¾—ç‰©å“                     â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
 
-    bool hasLoot = false;
+    // ä½¿ç”¨ std::any_of æ£€æŸ¥æ˜¯å¦æœ‰æˆ˜åˆ©å“
+    bool hasLoot = std::any_of(items.begin(), items.end(), [](int count) { return count > 0; });
+
     for (size_t i = 0; i < ITEM_TYPES; ++i) {
       if (items[i] > 0) {
-        hasLoot   = true;
         int value = items[i] * ITEMS[i].value;
 
-        std::cout << "¨U  " << ITEMS[i].name;
+        std::cout << "â•‘  " << ITEMS[i].name;
 
         int nameLen = std::string(ITEMS[i].name).length();
         for (int j = 0; j < 10 - nameLen / 3 * 2; ++j) {
@@ -490,112 +488,112 @@ class UIManager {
         }
 
         std::cout << "x" << std::setw(3) << items[i];
-        std::cout << "      ¼ÛÖµ: " << std::setw(8) << value << " ½ğ±Ò";
-        std::cout << "     ¨U\n";
+        std::cout << "      ä»·å€¼: " << std::setw(8) << value << " é‡‘å¸";
+        std::cout << "    â•‘\n";
       }
     }
 
     if (!hasLoot) {
-      std::cout << "¨U            ±¦ÏäÊÇ¿ÕµÄ£¬Õæ²»×ßÔË£¡              ¨U\n";
+      std::cout << "â•‘            å®ç®±æ˜¯ç©ºçš„ï¼ŒçœŸä¸èµ°è¿ï¼              â•‘\n";
     }
 
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U  ×Ü¼ÛÖµ: " << std::setw(10) << totalValue << " ½ğ±Ò                       ¨U\n";
-    std::cout << "¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘  æ€»ä»·å€¼: " << std::setw(10) << totalValue << " é‡‘å¸                           â•‘\n";
+    std::cout << "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n";
 
     if (totalValue > 10000) {
-      std::cout << "\n                  [´ó·áÊÕ!]\n";
+      std::cout << "\n                  [å¤§ä¸°æ”¶!]\n";
     } else if (totalValue > 1000) {
-      std::cout << "\n                  [ÊÕ»ñ²»´í!]\n";
+      std::cout << "\n                  [æ”¶è·ä¸é”™!]\n";
     } else if (totalValue > 100) {
-      std::cout << "\n                  [»¹¿ÉÒÔ!]\n";
+      std::cout << "\n                  [è¿˜å¯ä»¥!]\n";
     } else {
-      std::cout << "\n                  [ÁÄÊ¤ÓÚÎŞ]\n";
+      std::cout << "\n                  [èŠèƒœäºæ— ]\n";
     }
 
-    std::cout << "\n°´ÈÎÒâ¼ü¼ÌĞø...\n";
+    std::cout << "\næŒ‰ä»»æ„é”®ç»§ç»­...\n";
     Platform::getChar();
   }
 
   static void displayBattleResult(int reward, std::optional<std::string> loot = std::nullopt) {
     Platform::clearScreen();
 
-    std::cout << "\n¨X¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨[\n";
-    std::cout << "¨U                  Õ½¶·Ê¤Àû£¡                    ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U  »ñµÃ½ğ±Ò: " << std::setw(8) << reward << " Ã¶                         ¨U\n";
+    std::cout << "\nâ•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—\n";
+    std::cout << "â•‘                  æˆ˜æ–—èƒœåˆ©ï¼                    â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘  è·å¾—é‡‘å¸: " << std::setw(8) << reward << " æš                        â•‘\n";
 
     if (loot.has_value()) {
-      std::cout << "¨U  " << std::left << std::setw(46) << loot.value() << "¨U\n";
+      std::cout << "â•‘  " << std::left << std::setw(46) << loot.value() << "â•‘\n";
     }
 
-    std::cout << "¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a\n";
-    std::cout << "\n°´ÈÎÒâ¼ü¼ÌĞø...\n";
+    std::cout << "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n";
+    std::cout << "\næŒ‰ä»»æ„é”®ç»§ç»­...\n";
     Platform::getChar();
   }
 
   static void displayHelp() {
     Platform::clearScreen();
-    std::cout << "¨X¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨[\n";
-    std::cout << "¨U                  ¿ìËÙ°ïÖú                      ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U                  ÒÆ¶¯²Ù×÷                      ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U  W - ÏòÉÏÒÆ¶¯       A - Ïò×óÒÆ¶¯               ¨U\n";
-    std::cout << "¨U  S - ÏòÏÂÒÆ¶¯       D - ÏòÓÒÒÆ¶¯               ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U                  ¶¯×÷²Ù×÷                      ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U  O - ´ò¿ªÖÜÎ§µÄ±¦Ïä£¨×Ô¶¯Ñ°ÕÒ£©                ¨U\n";
-    std::cout << "¨U  K - ¹¥»÷ÖÜÎ§µÄ¹í¹Ö£¨Ã¿´Î1µãÉËº¦£©             ¨U\n";
-    std::cout << "¨U  E - ²é¿´±³°ü                                  ¨U\n";
-    std::cout << "¨U  H/? - ÏÔÊ¾´Ë°ïÖú                              ¨U\n";
-    std::cout << "¨U  R - ÍË³öÓÎÏ·                                  ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U                  Õ½¶·ÏµÍ³                      ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U  ¹í¹ÖÓĞ3µãÑªÁ¿: [G]=3Ñª [g]=2Ñª [*]=1Ñª        ¨U\n";
-    std::cout << "¨U  Ã¿´Î¹¥»÷Ôì³É1µãÉËº¦                           ¨U\n";
-    std::cout << "¨U  ¹í¹ÖÓĞ40%¸ÅÂÊ·´»÷£¨Ôì³É1-2µãÉËº¦£©            ¨U\n";
-    std::cout << "¨U  »÷°Ü¹í¹Ö»ñµÃ50-100½ğ±Ò                        ¨U\n";
-    std::cout << "¨U  30%¸ÅÂÊµôÂäÎïÆ·                               ¨U\n";
-    std::cout << "¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a\n";
-    std::cout << "\n°´ÈÎÒâ¼ü·µ»ØÓÎÏ·...\n";
+    std::cout << "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—\n";
+    std::cout << "â•‘                  å¿«é€Ÿå¸®åŠ©                      â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘                  ç§»åŠ¨æ“ä½œ                      â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘  W - å‘ä¸Šç§»åŠ¨       A - å‘å·¦ç§»åŠ¨              â•‘\n";
+    std::cout << "â•‘  S - å‘ä¸‹ç§»åŠ¨       D - å‘å³ç§»åŠ¨              â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘                  åŠ¨ä½œæ“ä½œ                      â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘  O - æ‰“å¼€å‘¨å›´çš„å®ç®±ï¼ˆè‡ªåŠ¨å¯»æ‰¾ï¼‰               â•‘\n";
+    std::cout << "â•‘  K - æ”»å‡»å‘¨å›´çš„é¬¼æ€ªï¼ˆæ¯æ¬¡1ç‚¹ä¼¤å®³ï¼‰            â•‘\n";
+    std::cout << "â•‘  E - æŸ¥çœ‹èƒŒåŒ…                                  â•‘\n";
+    std::cout << "â•‘  H/? - æ˜¾ç¤ºæ­¤å¸®åŠ©                             â•‘\n";
+    std::cout << "â•‘  R - é€€å‡ºæ¸¸æˆ                                  â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘                  æˆ˜æ–—ç³»ç»Ÿ                      â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘  é¬¼æ€ªæœ‰3ç‚¹è¡€é‡: [G]=3è¡€ [g]=2è¡€ [*]=1è¡€       â•‘\n";
+    std::cout << "â•‘  æ¯æ¬¡æ”»å‡»é€ æˆ1ç‚¹ä¼¤å®³                          â•‘\n";
+    std::cout << "â•‘  é¬¼æ€ªæœ‰40%æ¦‚ç‡åå‡»ï¼ˆé€ æˆ1-2ç‚¹ä¼¤å®³ï¼‰           â•‘\n";
+    std::cout << "â•‘  å‡»è´¥é¬¼æ€ªè·å¾—50-100é‡‘å¸                       â•‘\n";
+    std::cout << "â•‘  30%æ¦‚ç‡æ‰è½ç‰©å“                              â•‘\n";
+    std::cout << "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n";
+    std::cout << "\næŒ‰ä»»æ„é”®è¿”å›æ¸¸æˆ...\n";
     Platform::getChar();
   }
 
   static void displayTutorial() {
-    std::cout << "==================== ÓÎÏ·½Ì³Ì ====================\n";
-    std::cout << "Ä¿±ê: ´ÓÆğµãµ½´ï³ö¿Ú£¬ÊÕ¼¯±¦ÏäÖĞµÄ²Æ±¦£¡\n";
-    std::cout << "\nµØÍ¼·ûºÅËµÃ÷:\n";
-    std::cout << "  [ ] = ¿ÕµØ (¿ÉÍ¨ĞĞ)\n";
-    std::cout << "  [W] = Ç½±Ú (²»¿ÉÍ¨ĞĞ)\n";
-    std::cout << "  [C] = ±¦Ïä (¿ÉÒÔ´ò¿ª»ñµÃ²Æ±¦)\n";
-    std::cout << "  [Y] = Íæ¼Ò (ÄãµÄÎ»ÖÃ)\n";
-    std::cout << "  [G] = ¹í¹Ö (ÂúÑª3µã)\n";
-    std::cout << "  [g] = ÊÜÉË¹í¹Ö (2µãÑª)\n";
-    std::cout << "  [*] = ĞéÈõ¹í¹Ö (1µãÑª)\n";
-    std::cout << "  [D] = ³ö¿Ú (Ä¿±êµØµã)\n";
-    std::cout << "\n²Ù×÷ËµÃ÷:\n";
-    std::cout << "  W/A/S/D - ÉÏ/×ó/ÏÂ/ÓÒ ÒÆ¶¯\n";
-    std::cout << "  O - ´ò¿ªÖÜÎ§µÄ±¦Ïä£¨×Ô¶¯Ñ°ÕÒ£©\n";
-    std::cout << "  K - ¹¥»÷ÖÜÎ§µÄ¹í¹Ö£¨Ã¿´Î1µãÉËº¦£©\n";
-    std::cout << "  E - ´ò¿ª±³°ü (²é¿´ÎïÆ·Í³¼Æ)\n";
-    std::cout << "  H/? - ÏÔÊ¾¿ìËÙ°ïÖú\n";
-    std::cout << "  R - ÍË³öÓÎÏ·\n";
-    std::cout << "\nÓÎÏ·ÌáÊ¾:\n";
-    std::cout << "  ? ¹í¹ÖÓĞ3µãÑªÁ¿£¬ĞèÒª¹¥»÷3´Î²ÅÄÜ»÷°Ü\n";
-    std::cout << "  ? ¹í¹ÖÊÜÉËºóÓĞ¼¸ÂÊ·´»÷\n";
-    std::cout << "  ? »÷°Ü¹í¹Ö¿É»ñµÃ½ğ±ÒºÍÎïÆ·½±Àø\n";
-    std::cout << "  ? ÊÕ¼¯µÄÎïÆ·»á×Ô¶¯´æÈë±³°ü\n";
-    std::cout << "  ? ×¢Òâ±£»¤×Ô¼ºµÄÉúÃüÖµ£¡\n";
+    std::cout << "==================== æ¸¸æˆæ•™ç¨‹ ====================\n";
+    std::cout << "ç›®æ ‡: ä»èµ·ç‚¹åˆ°è¾¾å‡ºå£ï¼Œæ”¶é›†å®ç®±ä¸­çš„è´¢å®ï¼\n";
+    std::cout << "\nåœ°å›¾ç¬¦å·è¯´æ˜:\n";
+    std::cout << "  [ ] = ç©ºåœ° (å¯é€šè¡Œ)\n";
+    std::cout << "  [W] = å¢™å£ (ä¸å¯é€šè¡Œ)\n";
+    std::cout << "  [C] = å®ç®± (å¯ä»¥æ‰“å¼€è·å¾—è´¢å®)\n";
+    std::cout << "  [Y] = ç©å®¶ (ä½ çš„ä½ç½®)\n";
+    std::cout << "  [G] = é¬¼æ€ª (æ»¡è¡€3ç‚¹)\n";
+    std::cout << "  [g] = å—ä¼¤é¬¼æ€ª (2ç‚¹è¡€)\n";
+    std::cout << "  [*] = è™šå¼±é¬¼æ€ª (1ç‚¹è¡€)\n";
+    std::cout << "  [D] = å‡ºå£ (ç›®æ ‡åœ°ç‚¹)\n";
+    std::cout << "\næ“ä½œè¯´æ˜:\n";
+    std::cout << "  W/A/S/D - ä¸Š/å·¦/ä¸‹/å³ ç§»åŠ¨\n";
+    std::cout << "  O - æ‰“å¼€å‘¨å›´çš„å®ç®±ï¼ˆè‡ªåŠ¨å¯»æ‰¾ï¼‰\n";
+    std::cout << "  K - æ”»å‡»å‘¨å›´çš„é¬¼æ€ªï¼ˆæ¯æ¬¡1ç‚¹ä¼¤å®³ï¼‰\n";
+    std::cout << "  E - æ‰“å¼€èƒŒåŒ… (æŸ¥çœ‹ç‰©å“ç»Ÿè®¡)\n";
+    std::cout << "  H/? - æ˜¾ç¤ºå¿«é€Ÿå¸®åŠ©\n";
+    std::cout << "  R - é€€å‡ºæ¸¸æˆ\n";
+    std::cout << "\næ¸¸æˆæç¤º:\n";
+    std::cout << "  â€¢ é¬¼æ€ªæœ‰3ç‚¹è¡€é‡ï¼Œéœ€è¦æ”»å‡»3æ¬¡æ‰èƒ½å‡»è´¥\n";
+    std::cout << "  â€¢ é¬¼æ€ªå—ä¼¤åæœ‰å‡ ç‡åå‡»\n";
+    std::cout << "  â€¢ å‡»è´¥é¬¼æ€ªå¯è·å¾—é‡‘å¸å’Œç‰©å“å¥–åŠ±\n";
+    std::cout << "  â€¢ æ”¶é›†çš„ç‰©å“ä¼šè‡ªåŠ¨å­˜å…¥èƒŒåŒ…\n";
+    std::cout << "  â€¢ æ³¨æ„ä¿æŠ¤è‡ªå·±çš„ç”Ÿå‘½å€¼ï¼\n";
     std::cout << "==================================================\n";
-    std::cout << "\n°´ÈÎÒâ¼ü¿ªÊ¼ÓÎÏ·...";
+    std::cout << "\næŒ‰ä»»æ„é”®å¼€å§‹æ¸¸æˆ...";
     Platform::getChar();
   }
 };
 
-// ==================== ÓÎÏ·ÒıÇæ ====================
+// ==================== æ¸¸æˆå¼•æ“ ====================
 class Game {
  private:
   GameState state_;
@@ -611,7 +609,7 @@ class Game {
     Platform::setColor();
     displayTitle();
 
-    std::cout << "ÇëÊäÈëµØÍ¼´óĞ¡ (4-20): ";
+    std::cout << "è¯·è¾“å…¥åœ°å›¾å¤§å° (4-20): ";
     std::cin >> mapSize_;
     mapSize_ = std::clamp(mapSize_, 4, 20);
 
@@ -619,7 +617,7 @@ class Game {
     UIManager::displayTutorial();
 
     while (playLevel()) {
-      // ¼ÌĞøÏÂÒ»¹Ø
+      // ç»§ç»­ä¸‹ä¸€å…³
     }
 
     displayGameOver();
@@ -633,13 +631,13 @@ class Game {
     while (true) {
       Platform::clearScreen();
 
-      // ¼ì²éÓÎÏ·×´Ì¬
+      // æ£€æŸ¥æ¸¸æˆçŠ¶æ€
       if (state_.healthPoints <= 0) {
         displayDefeat();
         return false;
       }
 
-      // ¼ì²éÊÇ·ñµ½´ïÖÕµã
+      // æ£€æŸ¥æ˜¯å¦åˆ°è¾¾ç»ˆç‚¹
       if (isAtExit()) {
         if (!displayVictory()) {
           return false;
@@ -647,15 +645,15 @@ class Game {
         break;
       }
 
-      // ÏÔÊ¾ÓÎÏ·½çÃæ
+      // æ˜¾ç¤ºæ¸¸æˆç•Œé¢
       UIManager::displayGameStatus(state_);
       map_->display();
       std::cout << "==================================================\n";
-      std::cout << "¹í¹ÖÑªÁ¿: [G]=3Ñª  [g]=2Ñª  [*]=1Ñª\n";
-      std::cout << "²Ù×÷: W/A/S/DÒÆ¶¯ | O¿ªÏä | K¹¥»÷ | E±³°ü | H°ïÖú | RÍË³ö\n";
-      std::cout << "ÌáÊ¾: ¹í¹ÖĞèÒª¹¥»÷3´Î²ÅÄÜ»÷°Ü£¬Ğ¡ĞÄ·´»÷£¡\n";
+      std::cout << "é¬¼æ€ªè¡€é‡: [G]=3è¡€  [g]=2è¡€  [*]=1è¡€\n";
+      std::cout << "æ“ä½œ: W/A/S/Dç§»åŠ¨ | Oå¼€ç®± | Kæ”»å‡» | EèƒŒåŒ… | Hå¸®åŠ© | Ré€€å‡º\n";
+      std::cout << "æç¤º: é¬¼æ€ªéœ€è¦æ”»å‡»3æ¬¡æ‰èƒ½å‡»è´¥ï¼Œå°å¿ƒåå‡»ï¼\n";
 
-      // ÏÔÊ¾ÏûÏ¢
+      // æ˜¾ç¤ºæ¶ˆæ¯
       auto msg = ui_.getAndClearMessage();
       if (!msg.empty()) {
         std::cout << ">> " << msg << '\n';
@@ -694,13 +692,13 @@ class Game {
         UIManager::displayHelp();
         break;
       case 'r':
-        std::cout << "\nÈ·¶¨ÒªÍË³öÓÎÏ·Âğ£¿(Y/N): ";
+        std::cout << "\nç¡®å®šè¦é€€å‡ºæ¸¸æˆå—ï¼Ÿ(Y/N): ";
         if (std::tolower(Platform::getChar()) == 'y') {
           return false;
         }
         break;
       default:
-        // ºöÂÔÎŞĞ§ÊäÈë
+        // å¿½ç•¥æ— æ•ˆè¾“å…¥
         break;
     }
 
@@ -725,12 +723,12 @@ class Game {
         targetPos = currentPos + DIRECTIONS[0];
         break;
       default:
-        ui_.showMessage("ÎŞĞ§µÄÒÆ¶¯·½Ïò£¡");
+        ui_.showMessage("æ— æ•ˆçš„ç§»åŠ¨æ–¹å‘ï¼");
         return;
     }
 
     if (!map_->isInBounds(targetPos)) {
-      ui_.showMessage("ÎŞ·¨ÒÆ¶¯µ½¸ÃÎ»ÖÃ£¡");
+      ui_.showMessage("æ— æ³•ç§»åŠ¨åˆ°è¯¥ä½ç½®ï¼");
       return;
     }
 
@@ -740,14 +738,14 @@ class Game {
         && targetElement != MapElement::Door) {
       if (targetElement == MapElement::Ghost || targetElement == MapElement::GhostHurt
           || targetElement == MapElement::GhostWeak) {
-        ui_.showMessage("Ç°·½ÓĞ¹í¹Öµ²Â·£¡°´K¹¥»÷Ëü£¡");
+        ui_.showMessage("å‰æ–¹æœ‰é¬¼æ€ªæŒ¡è·¯ï¼æŒ‰Kæ”»å‡»å®ƒï¼");
       } else {
-        ui_.showMessage("ÎŞ·¨ÒÆ¶¯µ½¸ÃÎ»ÖÃ£¡");
+        ui_.showMessage("æ— æ³•ç§»åŠ¨åˆ°è¯¥ä½ç½®ï¼");
       }
       return;
     }
 
-    // ÒÆ¶¯Íæ¼Ò
+    // ç§»åŠ¨ç©å®¶
     map_->setElement(currentPos, MapElement::Empty);
     map_->setElement(targetPos, MapElement::Player);
     map_->setPlayerPos(targetPos);
@@ -757,7 +755,7 @@ class Game {
     auto playerPos = map_->getPlayerPos();
     std::vector<Position> chestPositions;
 
-    // ²éÕÒÖÜÎ§µÄ±¦Ïä
+    // æŸ¥æ‰¾å‘¨å›´çš„å®ç®±
     for (auto const& dir : DIRECTIONS) {
       auto checkPos = playerPos + dir;
       if (map_->isInBounds(checkPos) && map_->getElement(checkPos) == MapElement::Chest) {
@@ -766,16 +764,16 @@ class Game {
     }
 
     if (chestPositions.empty()) {
-      ui_.showMessage("ÖÜÎ§Ã»ÓĞ±¦Ïä£¡");
+      ui_.showMessage("å‘¨å›´æ²¡æœ‰å®ç®±ï¼");
       return;
     }
 
-    // ´ò¿ªµÚÒ»¸ö±¦Ïä
+    // æ‰“å¼€ç¬¬ä¸€ä¸ªå®ç®±
     auto chestPos = chestPositions[0];
     state_.chestsOpened++;
     map_->setElement(chestPos, MapElement::Empty);
 
-    // Éú³ÉÕ½ÀûÆ·
+    // ç”Ÿæˆæˆ˜åˆ©å“
     std::array<int, ITEM_TYPES> newItems{};
     int totalValue = 0;
 
@@ -794,7 +792,7 @@ class Game {
 
     if (chestPositions.size() > 1) {
       std::stringstream msg;
-      msg << "ÌáÊ¾£ºÖÜÎ§»¹ÓĞ " << chestPositions.size() - 1 << " ¸ö±¦Ïä£¡";
+      msg << "æç¤ºï¼šå‘¨å›´è¿˜æœ‰ " << chestPositions.size() - 1 << " ä¸ªå®ç®±ï¼";
       ui_.showMessage(msg.str());
     }
   }
@@ -803,7 +801,7 @@ class Game {
     auto playerPos = map_->getPlayerPos();
     std::vector<Position> ghostPositions;
 
-    // ²éÕÒÖÜÎ§µÄ¹í¹Ö
+    // æŸ¥æ‰¾å‘¨å›´çš„é¬¼æ€ª
     for (auto const& dir : DIRECTIONS) {
       auto checkPos = playerPos + dir;
       if (map_->isInBounds(checkPos)) {
@@ -815,18 +813,18 @@ class Game {
     }
 
     if (ghostPositions.empty()) {
-      ui_.showMessage("ÖÜÎ§Ã»ÓĞ¹í¹Ö£¡");
+      ui_.showMessage("å‘¨å›´æ²¡æœ‰é¬¼æ€ªï¼");
       return;
     }
 
-    // ¹¥»÷µÚÒ»¸ö¹í¹Ö
+    // æ”»å‡»ç¬¬ä¸€ä¸ªé¬¼æ€ª
     auto ghostPos  = ghostPositions[0];
     int currentHP  = map_->getGhostHP(ghostPos);
     currentHP     -= PLAYER_DAMAGE;
     map_->setGhostHP(ghostPos, currentHP);
 
     if (currentHP <= 0) {
-      // ¹í¹Ö±»»÷°Ü
+      // é¬¼æ€ªè¢«å‡»è´¥
       map_->setElement(ghostPos, MapElement::Empty);
       state_.ghostsDefeated++;
 
@@ -835,14 +833,14 @@ class Game {
 
       std::optional<std::string> loot;
 
-      // µôÂäÎïÆ·
+      // æ‰è½ç‰©å“
       if (rng_.getBool(30)) {
         int itemType               = rng_.getInt(0, 4);
         int itemCount              = 1 + rng_.getInt(0, 3);
         state_.backpack[itemType] += itemCount;
 
         std::stringstream ss;
-        ss << "µôÂäÎïÆ·: " << ITEMS[itemType].name << " x" << itemCount;
+        ss << "æ‰è½ç‰©å“: " << ITEMS[itemType].name << " x" << itemCount;
         loot = ss.str();
       }
 
@@ -850,35 +848,35 @@ class Game {
 
       if (ghostPositions.size() > 1) {
         std::stringstream warning;
-        warning << "¾¯¸æ£ºÖÜÎ§»¹ÓĞ " << ghostPositions.size() - 1 << " ¸ö¹í¹Ö£¡";
+        warning << "è­¦å‘Šï¼šå‘¨å›´è¿˜æœ‰ " << ghostPositions.size() - 1 << " ä¸ªé¬¼æ€ªï¼";
         ui_.showMessage(warning.str());
       }
     } else {
-      // ¹í¹ÖÊÜÉË
+      // é¬¼æ€ªå—ä¼¤
       std::stringstream msg;
-      msg << "¹¥»÷¹í¹Ö£¡Ê£ÓàÑªÁ¿:" << currentHP << "/" << GHOST_MAX_HP;
+      msg << "æ”»å‡»é¬¼æ€ªï¼å‰©ä½™è¡€é‡:" << currentHP << "/" << GHOST_MAX_HP;
 
-      // ¸üĞÂ¹í¹Ö×´Ì¬
+      // æ›´æ–°é¬¼æ€ªçŠ¶æ€
       if (currentHP == 2) {
         map_->setElement(ghostPos, MapElement::GhostHurt);
       } else if (currentHP == 1) {
         map_->setElement(ghostPos, MapElement::GhostWeak);
       }
 
-      // ¹í¹Ö·´»÷
+      // é¬¼æ€ªåå‡»
       if (rng_.getBool(40)) {
         int damage           = 1 + rng_.getInt(0, 2);
         state_.healthPoints -= damage;
-        msg << " ·´»÷-" << damage << "HP!";
+        msg << " åå‡»-" << damage << "HP!";
 
         if (state_.healthPoints <= 0) {
-          ui_.showMessage("Äã±»¹í¹Ö»÷°ÜÁË£¡ÓÎÏ·½áÊø£¡");
+          ui_.showMessage("ä½ è¢«é¬¼æ€ªå‡»è´¥äº†ï¼æ¸¸æˆç»“æŸï¼");
           return;
         }
       }
 
       if (ghostPositions.size() > 1) {
-        msg << " [»¹ÓĞ" << ghostPositions.size() - 1 << "¸ö¹í¹Ö]";
+        msg << " [è¿˜æœ‰" << ghostPositions.size() - 1 << "ä¸ªé¬¼æ€ª]";
       }
 
       ui_.showMessage(msg.str());
@@ -891,26 +889,26 @@ class Game {
   }
 
   bool displayVictory() {
-    std::cout << "¨X¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨[\n";
-    std::cout << "¨U                  ¹§Ï²Í¨¹Ø£¡                    ¨U\n";
-    std::cout << "¨U              Äã³É¹¦µ½´ïÁË³ö¿Ú£¡                ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
+    std::cout << "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—\n";
+    std::cout << "â•‘                  æ­å–œé€šå…³ï¼                    â•‘\n";
+    std::cout << "â•‘              ä½ æˆåŠŸåˆ°è¾¾äº†å‡ºå£ï¼                â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
 
     int levelBonus       = 100 + (mapSize_ * 10);
     state_.money        += levelBonus;
     state_.healthPoints  = std::min(state_.healthPoints + 2, INITIAL_HEALTH);
 
-    std::cout << "¨U  Í¨¹Ø½±Àø: " << std::setw(8) << levelBonus << " ½ğ±Ò                       ¨U\n";
-    std::cout << "¨U  ÉúÃüÖµ»Ö¸´2µã£¡µ±Ç°ÉúÃü: " << std::setw(2) << state_.healthPoints << "/20                ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U                  µ±Ç°Í³¼Æ                      ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U  ½ğ±Ò: " << std::setw(10) << state_.money << " Ã¶                           ¨U\n";
-    std::cout << "¨U  ÒÑ¿ª±¦Ïä: " << std::setw(8) << state_.chestsOpened << " ¸ö                         ¨U\n";
-    std::cout << "¨U  »÷°Ü¹í¹Ö: " << std::setw(8) << state_.ghostsDefeated << " ¸ö                         ¨U\n";
-    std::cout << "¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a\n";
+    std::cout << "â•‘  é€šå…³å¥–åŠ±: " << std::setw(8) << levelBonus << " é‡‘å¸                      â•‘\n";
+    std::cout << "â•‘  ç”Ÿå‘½å€¼æ¢å¤2ç‚¹ï¼å½“å‰ç”Ÿå‘½: " << std::setw(2) << state_.healthPoints << "/20            â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘                  å½“å‰ç»Ÿè®¡                      â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘  é‡‘å¸: " << std::setw(10) << state_.money << " æš                           â•‘\n";
+    std::cout << "â•‘  å·²å¼€å®ç®±: " << std::setw(8) << state_.chestsOpened << " ä¸ª                         â•‘\n";
+    std::cout << "â•‘  å‡»è´¥é¬¼æ€ª: " << std::setw(8) << state_.ghostsDefeated << " ä¸ª                         â•‘\n";
+    std::cout << "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n";
 
-    std::cout << "\nÑ¡Ôñ: [0] ÍË³öÓÎÏ·  [1] ÏÂÒ»¹Ø: ";
+    std::cout << "\né€‰æ‹©: [0] é€€å‡ºæ¸¸æˆ  [1] ä¸‹ä¸€å…³: ";
 
     int choice;
     std::cin >> choice;
@@ -919,45 +917,45 @@ class Game {
   }
 
   void displayDefeat() const {
-    std::cout << "¨X¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨[\n";
-    std::cout << "¨U                  ÓÎÏ·½áÊø£¡                    ¨U\n";
-    std::cout << "¨U              Äã±»¹í¹Ö»÷°ÜÁË£¡                  ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U                  ×îÖÕÍ³¼Æ                      ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U  ×Ü½ğ±Ò: " << std::setw(10) << state_.money << " Ã¶                         ¨U\n";
-    std::cout << "¨U  ¿ªÆô±¦Ïä: " << std::setw(8) << state_.chestsOpened << " ¸ö                         ¨U\n";
-    std::cout << "¨U  »÷°Ü¹í¹Ö: " << std::setw(8) << state_.ghostsDefeated << " ¸ö                         ¨U\n";
-    std::cout << "¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a\n";
+    std::cout << "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—\n";
+    std::cout << "â•‘                  æ¸¸æˆç»“æŸï¼                    â•‘\n";
+    std::cout << "â•‘              ä½ è¢«é¬¼æ€ªå‡»è´¥äº†ï¼                  â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘                  æœ€ç»ˆç»Ÿè®¡                      â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘  æ€»é‡‘å¸: " << std::setw(10) << state_.money << " æš                         â•‘\n";
+    std::cout << "â•‘  å¼€å¯å®ç®±: " << std::setw(8) << state_.chestsOpened << " ä¸ª                         â•‘\n";
+    std::cout << "â•‘  å‡»è´¥é¬¼æ€ª: " << std::setw(8) << state_.ghostsDefeated << " ä¸ª                         â•‘\n";
+    std::cout << "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n";
     Platform::pause(std::chrono::milliseconds(5000));
   }
 
   void displayGameOver() const {
     Platform::clearScreen();
-    std::cout << "¨X¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨[\n";
-    std::cout << "¨U                  ÓÎÏ·½áÊø£¡                    ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U                  ×îÖÕÕ½¼¨                      ¨U\n";
-    std::cout << "¨d¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨g\n";
-    std::cout << "¨U  ×Ü½ğ±Ò: " << std::setw(10) << state_.money << " Ã¶                         ¨U\n";
-    std::cout << "¨U  ¿ªÆô±¦Ïä: " << std::setw(8) << state_.chestsOpened << " ¸ö                         ¨U\n";
-    std::cout << "¨U  »÷°Ü¹í¹Ö: " << std::setw(8) << state_.ghostsDefeated << " ¸ö                         ¨U\n";
-    std::cout << "¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a\n";
-    std::cout << "\n           ¸ĞĞ»ÓÎÍæ£¡ÏÂ´ÎÔÙ¼û£¡\n";
+    std::cout << "â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—\n";
+    std::cout << "â•‘                  æ¸¸æˆç»“æŸï¼                    â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘                  æœ€ç»ˆæˆ˜ç»©                      â•‘\n";
+    std::cout << "â• â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•£\n";
+    std::cout << "â•‘  æ€»é‡‘å¸: " << std::setw(10) << state_.money << " æš                         â•‘\n";
+    std::cout << "â•‘  å¼€å¯å®ç®±: " << std::setw(8) << state_.chestsOpened << " ä¸ª                         â•‘\n";
+    std::cout << "â•‘  å‡»è´¥é¬¼æ€ª: " << std::setw(8) << state_.ghostsDefeated << " ä¸ª                         â•‘\n";
+    std::cout << "â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n";
+    std::cout << "\n           æ„Ÿè°¢æ¸¸ç©ï¼ä¸‹æ¬¡å†è§ï¼\n";
     Platform::pause(std::chrono::milliseconds(2000));
   }
 
   static void displayTitle() {
     std::cout << "\n\n\n\n\n";
-    std::cout << "                    ¨X¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨[\n";
-    std::cout << "                    ¨U     CHESTS IN MAPS     ¨U\n";
-    std::cout << "                    ¨U      ±¦ÏäÌ½ÏÕÓÎÏ·      ¨U\n";
-    std::cout << "                    ¨U     CANARY EDITION     ¨U\n";
-    std::cout << "                    ¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a\n";
+    std::cout << "                    â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—\n";
+    std::cout << "                    â•‘     CHESTS IN MAPS     â•‘\n";
+    std::cout << "                    â•‘      å®ç®±æ¢é™©æ¸¸æˆ      â•‘\n";
+    std::cout << "                    â•‘   C++ CANARY EDITION   â•‘\n";
+    std::cout << "                    â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n";
     std::cout << "\n\n\n\n\n";
-    std::cout << "                       °´ÈÎÒâ¼ü¿ªÊ¼ÓÎÏ·...\n";
+    std::cout << "                       æŒ‰ä»»æ„é”®å¼€å§‹æ¸¸æˆ...\n";
     std::cout << "\n\n\n\n\n\n\n";
-    std::cout << "Version: Canary 4.1\n";
+    std::cout << "Version: C++ Canary Edition 4.1\n";
 
     Platform::getChar();
     Platform::clearScreen();
@@ -965,13 +963,13 @@ class Game {
 };
 }  // namespace ChestsInMaps
 
-// ==================== Ö÷º¯Êı ====================
+// ==================== ä¸»å‡½æ•° ====================
 int main() {
   try {
     ChestsInMaps::Game game;
     game.run();
   } catch (std::exception const& e) {
-    std::cerr << "ÓÎÏ··¢Éú´íÎó: " << e.what() << '\n';
+    std::cerr << "æ¸¸æˆå‘ç”Ÿé”™è¯¯: " << e.what() << '\n';
     return 1;
   }
 
