@@ -14,6 +14,7 @@
 #include <vector>
 
 #include <conio.h>
+#include <windows.h>  // 添加Windows头文件
 
 // Windows平台函数
 namespace Platform {
@@ -23,6 +24,12 @@ inline void clearScreen() noexcept {
 
 inline void setColor() noexcept {
   system("color 03");
+}
+
+// 初始化控制台UTF-8支持
+inline void initConsole() noexcept {
+  SetConsoleOutputCP(CP_UTF8);  // 设置UTF-8输出
+  SetConsoleCP(CP_UTF8);         // 设置UTF-8输入
 }
 
 inline void pause(std::chrono::milliseconds ms) noexcept {
@@ -606,6 +613,7 @@ class Game {
   Game() : mapSize_(10) {}
 
   void run() {
+    Platform::initConsole();  // 初始化控制台UTF-8
     Platform::setColor();
     displayTitle();
 
@@ -955,7 +963,7 @@ class Game {
     std::cout << "\n\n\n\n\n";
     std::cout << "                       按任意键开始游戏...\n";
     std::cout << "\n\n\n\n\n\n\n";
-    std::cout << "Version: C++ Canary Edition 4.1\n";
+    std::cout << "Version: C++ Canary Edition 4.1 Fixed\n";
 
     Platform::getChar();
     Platform::clearScreen();

@@ -1,26 +1,49 @@
-name: Build Canary with Maximum Optimization
+name: Build Canary (MSVC)
 
 on:
   push:
     branches: [ main, master ]
+    paths:
+      - 'Canary.cpp'
+      - '.github/workflows/build-canary.yml'
   pull_request:
     branches: [ main, master ]
+    paths:
+      - 'Canary.cpp'
   workflow_dispatch:
 
 jobs:
-  build-optimized:
+  build:
+    name: Build with MSVC
     runs-on: windows-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
     
-    - uses: ilammy/msvc-dev-cmd@v1
+    - name: Setup MSVC environment
+      uses: ilammy/msvc-dev-cmd@v1
         
-    - name: Build with Maximum Optimization
+    - name: Build Canary
       run: |
-        clang-cl /EHsc /O2 /Ob2 /Oi /Ot /Oy /fp:fast /GS- /GL /std:c++latest /W4 /MT /DNDEBUG /Fe:Canary.exe Canary.cpp
+        echo "Building Canary.cpp with MSVC..."
+        cl /utf-8 /EHsc /O2 /Ob2 /Oi /Ot /Oy /fp:fast /GS- /GL /std:c++latest /W4 /MT /DNDEBUG /Fe:Canary.exe Canary.cpp /link /LTCG
         
-    - uses: actions/upload-artifact@v4
+    - name: Generate build info
+      run: |
+        echo "Build Information" > canary_build_info.txt
+        echo "=================" >> canary_build_info.txt
+        echo "Project: Canary (Chests in Maps)" >> canary_build_info.txt
+        echo "Compiler: MSVC" >> canary_build_info.txt
+        echo "Optimization: Maximum (/O2 /GL /LTCG)" >> canary_build_info.txt
+        echo "Build Date: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" >> canary_build_info.txt
+        echo "File Size: $((Get-Item Canary.exe).length / 1KB) KB" >> canary_build_info.txt
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
       with:
-        name: canary-optimized
-        path: Canary.exe
+        name: canary-msvc-${{ github.sha }}
+        path: |
+          Canary.exe
+          canary_build_info.txt
+        retention-days: 30
